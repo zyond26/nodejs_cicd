@@ -1,15 +1,14 @@
 pipeline {
     agent any
 
-    // environment {
-    //     DOCKERHUB_CREDENTIALS = 'a8043e21-320b-4f12-b72e-612d7a93c553'
-    //     IMAGE_NAME = 'zyond/web_cicd'
-    //     DOCKER_IMAGE_NAME = 'zyond/web_cicd'
-    //     DOCKER_TAG = 'latest'
-    // }
-
+    environment {
+        DOCKER_IMAGE = 'zyond/nodejs_cicd'
+        DOCKER_TAG = 'latest'
+        CONTAINER_NAME = 'nodeapp'
+        DOCKER_CREDENTIALS_ID = 'a8043e21-320b-4f12-b72e-612d7a93c553'
+    }
     tools {
-        nodejs "NodeJS 24" // Đảm bảo bạn đã cài tool này trong Jenkins
+        nodejs "NodeJS 24" 
     }
 
     stages {
@@ -34,75 +33,34 @@ pipeline {
             }
         }
 
-        stage('Build Web (Expo)') {
+        //  --------------- docker hihi------------
+
+        stage('Build Docker Image') {
             steps {
-                echo '🌐 Building Expo Web...'
-                bat 'npm start'
+                script {
+                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                }
             }
         }
 
-        stage('Deploy to IIS') {
+        stage('Push Docker Image') {
             steps {
-                echo '🧹 Cleaning old deploy folder...'
-                bat 'if exist C:\\inetpub\\wwwroot\\expoapp rd /s /q C:\\inetpub\\wwwroot\\expoapp'
-                
-                echo '📂 Creating deploy folder...'
-                bat 'mkdir C:\\inetpub\\wwwroot\\expoapp'
-                
-                echo '📁 Copying files to IIS...'
-                bat 'xcopy /E /Y /I /R "%WORKSPACE%\\dist\\web-build\\*" "C:\\inetpub\\wwwroot\\expoapp\\"'
-                
-                echo '🔄 Restarting IIS...'
-                bat 'iisreset /restart'
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
+                        docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").push()
+                    }
+                }
             }
         }
 
-        // stage('Build Docker Image') {
-        //     steps {
-        //         script {
-        //             docker.build("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}")
-        //         }
-        //     }
-        // }
-
-        // stage('Push Docker Image') {
-        //     steps {
-        //         script {
-        //             docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-        //                 docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}").push()
-        //             }
-        //         }
-        //     }
-        // }
-
-        // stage('Run Docker Container') {
-        //     steps {
-        //         script {
-        //             sh 'docker stop myweb || true'
-        //             sh 'docker rm myweb || true'
-        //             sh "docker run -d -p 5000:5000 --name myweb ${DOCKER_IMAGE_NAME}:${DOCKER_TAG}"
-        //         }
-        //     }
-        // }
-
-    //     stage('Upload file lên MinIO') {
-    //         steps {
-    //             sh 'echo "Build thành công" > build-log.txt'
-
-    //             sh 'aws configure set aws_access_key_id admin'
-    //             sh 'aws configure set aws_secret_access_key 12345678'
-
-    //             sh 'aws --endpoint-url http://minio.localhost s3 cp build-log.txt s3://order-files/build-log.txt'
-    //         }
-    //     }
-    }
-
-    post {
-        success {
-            echo '✅ CI/CD pipeline hoàn tất thành công!'
-        }
-        failure {
-            echo '❌ Pipeline thất bại.'
+        stage('Run Container') {
+            steps {
+                script {
+                    bat "docker stop ${CONTAINER_NAME} || exit 0"
+                    bat "docker rm ${CONTAINER_NAME} || exit 0"
+                    bat "docker run -d -p 3000:3000 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                }
+            }
         }
     }
 }
