@@ -6,7 +6,9 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "test": "echo \"No tests implemented yet\" && exit 0",
+    "build": "echo \"No build step needed for Expo app\" && exit 0"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",

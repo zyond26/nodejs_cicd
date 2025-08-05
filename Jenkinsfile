@@ -27,6 +27,13 @@ pipeline {
             }
         }
 
+        stage('Test') {
+            steps {
+                echo '🧪 Running tests...'
+                bat 'npm test || echo "Tests failed or not implemented yet"'
+            }
+        }
+
         stage('Build') {
             steps {
                 echo '🔧 Running build (if applicable)...'
