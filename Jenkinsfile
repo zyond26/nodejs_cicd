@@ -9,31 +9,35 @@ pipeline {
     }
 
     tools {
-        nodejs 'NodeJS 24'
+        nodejs "NodeJS 24"
     }
 
     stages {
         stage('Clone') {
             steps {
+                echo '📥 Cloning source code...'
                 git branch: 'main', url: 'https://github.com/zyond26/nodejs_cicd.git'
             }
         }
 
         stage('Install Dependencies') {
             steps {
+                echo '📦 Installing npm packages...'
                 bat 'npm install'
             }
         }
 
-        stage('Build Web') {
+        stage('Build Expo Web') {
             steps {
-                bat 'npm run web:build'
+                echo '🏗️ Building Expo Web...'
+                bat 'npx expo export --platform web --output-dir dist'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
+                    echo '🐳 Building Docker image...'
                     docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
                 }
             }
@@ -42,6 +46,7 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
+                    echo '📤 Pushing Docker image to Docker Hub...'
                     docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
                         docker.image("${DOCKER_IMAGE}:${DOCKER_TAG}").push()
                     }
@@ -52,6 +57,7 @@ pipeline {
         stage('Deploy Container') {
             steps {
                 script {
+                    echo '🚀 Restarting container...'
                     bat "docker stop ${CONTAINER_NAME} || exit 0"
                     bat "docker rm ${CONTAINER_NAME} || exit 0"
                     bat "docker run -d -p 3000:80 --name ${CONTAINER_NAME} ${DOCKER_IMAGE}:${DOCKER_TAG}"

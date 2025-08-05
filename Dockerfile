@@ -1,15 +1,21 @@
-FROM node:24
-FROM nginx:alpine
-
-COPY ./dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Stage 1: Build web with Expo
+FROM node:24 AS builder
 
 WORKDIR /app
-COPY . .
 
+COPY package.json package-lock.json ./
 RUN npm install -g expo-cli
 RUN npm install
 
-RUN npx expo export:web --output-dir web-build
+COPY . .
+RUN npx expo export --platform web --output-dir dist
 
-CMD ["echo", "Expo build completed."]
+# Stage 2: Serve with Nginx
+FROM nginx:alpine
+
+# Copy build files from builder stage
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
