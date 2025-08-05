@@ -13,7 +13,7 @@ pipeline {
         stage('Clone') {
             steps {
                 echo 'Cloning source code'
-                git branch: 'master', url: 'https://github.com/zyond26/nodejs_cicd.git'
+                git branch: 'main', url: 'https://github.com/zyond26/nodejs_cicd.git'
             }
         }
 
