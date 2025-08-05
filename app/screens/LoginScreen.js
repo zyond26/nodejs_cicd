@@ -56,7 +56,7 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Đăng nhập</Text>
+      <Text style={styles.title}>Đăng nhập vaof appp nhaaaa </Text>
 
       <TextInput
         style={styles.input}
@@ -73,8 +73,8 @@ export default function LoginScreen({ navigation }) {
         onChangeText={setPassword}
       />
 
-      <TouchableOpacity 
-        style={[styles.button, loading && styles.buttonDisabled]} 
+      <TouchableOpacity
+        style={[styles.button, loading && styles.buttonDisabled]}
         onPress={handleLogin}
         disabled={loading}
       >
