@@ -33,6 +33,7 @@ pipeline {
                 bat 'npx expo export --platform web --output-dir dist'
             }
         }
+//  ---------------------------------------------- docker nhaaaaa -----------------------
 
         stage('Build Docker Image') {
             steps {
