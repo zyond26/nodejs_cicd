@@ -41,6 +41,29 @@ pipeline {
             }
         }
 
+        stage('Build Web (Expo)') {
+            steps {
+                echo '🌐 Building Expo Web...'
+                bat 'npm start'
+            }
+        }
+
+        stage('Deploy to IIS') {
+            steps {
+                echo '🧹 Cleaning old deploy folder...'
+                bat 'if exist C:\\inetpub\\wwwroot\\expoapp rd /s /q C:\\inetpub\\wwwroot\\expoapp'
+                
+                echo '📂 Creating deploy folder...'
+                bat 'mkdir C:\\inetpub\\wwwroot\\expoapp'
+                
+                echo '📁 Copying files to IIS...'
+                bat 'xcopy /E /Y /I /R "%WORKSPACE%\\dist\\web-build\\*" "C:\\inetpub\\wwwroot\\expoapp\\"'
+                
+                echo '🔄 Restarting IIS...'
+                bat 'iisreset /restart'
+            }
+        }
+
         // stage('Build Docker Image') {
         //     steps {
         //         script {
