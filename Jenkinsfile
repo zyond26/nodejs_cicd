@@ -9,7 +9,7 @@ pipeline {
     // }
 
     tools {
-        nodejs "NodeJS 18" // Đảm bảo bạn đã cài tool này trong Jenkins
+        nodejs "NodeJS 24" // Đảm bảo bạn đã cài tool này trong Jenkins
     }
 
     stages {
