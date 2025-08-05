@@ -56,7 +56,7 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Đăng nhập vaof appp nhaaaa </Text>
+      <Text style={styles.title}>Đăng nhập</Text>
 
       <TextInput
         style={styles.input}
