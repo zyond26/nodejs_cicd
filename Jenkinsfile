@@ -23,21 +23,21 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo '📦 Installing npm packages...'
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Test') {
             steps {
                 echo '🧪 Running tests...'
-                sh 'npm test || echo "Tests failed or not implemented yet"'
+                bat 'npm test || echo "Tests failed or not implemented yet"'
             }
         }
 
         stage('Build') {
             steps {
                 echo '🔧 Running build (if applicable)...'
-                sh 'npm run build || echo "No build step defined"'
+                bat 'npm run build || echo "No build step defined"'
             }
         }
 
