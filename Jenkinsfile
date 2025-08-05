@@ -34,13 +34,6 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                echo '🔧 Running build (if applicable)...'
-                bat 'npm run build || echo "No build step defined"'
-            }
-        }
-
         stage('Build Web (Expo)') {
             steps {
                 echo '🌐 Building Expo Web...'
